@@ -11,6 +11,13 @@
       "config": {
         "distDir": "front-end/build"
       }
+    },
+    {
+      "build": {
+        "env": {
+          "NODE_ENV": "production"
+        }
+      }
     }
   ],
   "routes": [
