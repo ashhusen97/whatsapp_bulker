@@ -7,23 +7,20 @@
     },
     {
       "src": "front-end/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "front-end/build"
-      }
-    },
-    {
-      "build": {
-        "env": {
-          "NODE_ENV": "production"
-        }
-      }
+      "use": "@vercel/static-build"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "src/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "front-end/build/$1"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
