@@ -71,6 +71,9 @@ io.on("connection", (socket) => {
   });
 });
 // --- API Routes ---
+app.get("/", (req, res) => {
+  return res.send("App is Ruuningg");
+});
 app.get("/status", (req, res) => {
   res.json({
     isConnected,
