@@ -11,13 +11,11 @@ import { Server } from "socket.io";
 import http from "http";
 import {
   createUser,
-  fetchQueued,
   insertJob,
   listJobs,
   listJobsByUser,
   loginUser,
 } from "./db.js";
-import { sendText } from "./whatsapp.js";
 import pLimit from "p-limit";
 import cors from "cors";
 
@@ -155,25 +153,25 @@ app.get("/userJobs/:userId", async (req, res) => {
   }
 });
 
-app.get("/queued", async (req, res) => {
-  try {
-    const limit = pLimit(CONCURRENCY);
-    const jobs = await fetchQueued(100);
+// app.get("/queued", async (req, res) => {
+//   try {
+//     const limit = pLimit(CONCURRENCY);
+//     const jobs = await fetchQueued(100);
 
-    const tasks = jobs.map((j) =>
-      limit(async () => {
-        const result = await sendText(j.phone, j.message);
-        await new Promise((r) => setTimeout(r, 500));
-      })
-    );
+//     const tasks = jobs.map((j) =>
+//       limit(async () => {
+//         const result = await sendText(j.phone, j.message);
+//         await new Promise((r) => setTimeout(r, 500));
+//       })
+//     );
 
-    await Promise.all(tasks);
-    res.json({ success: true, processed: jobs.length });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch jobs" });
-  }
-});
+//     await Promise.all(tasks);
+//     res.json({ success: true, processed: jobs.length });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to fetch jobs" });
+//   }
+// });
 
 app.post("/upload", (req, res) => {
   if (isProcessing) {
