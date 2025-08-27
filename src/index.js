@@ -85,18 +85,18 @@ const fs = require("fs");
 const formidable = require("formidable");
 const express = require("express");
 const app = express();
-
+const { listJobs } = require("../src/db");
 app.get("/", (req, res) => res.send("Express on Vercel"));
 
-// app.get("/jobs", async (req, res) => {
-//   try {
-//     const jobs = await listJobs(100);
-//     res.json(jobs);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Failed to fetch jobs" });
-//   }
-// });
+app.get("/jobs", async (req, res) => {
+  try {
+    const jobs = await listJobs(100);
+    res.json(jobs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch jobs" });
+  }
+});
 
 // app.get("/userJobs/:userId", async (req, res) => {
 //   try {
