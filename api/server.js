@@ -19,8 +19,6 @@ import { fileURLToPath } from "url";
 import { sendText } from "../src/whatsapp.js";
 import { normalizeNumber, parseCsv } from "../src/utils.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 dotenv.config();
 const app = express();
 app.use(cors());
