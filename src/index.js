@@ -81,43 +81,37 @@
 // );
 
 const fs = require("fs");
-import {
-  createUser,
-  insertJob,
-  listJobs,
-  listJobsByUser,
-  loginUser,
-} from "./db.js";
+
 const formidable = require("formidable");
 const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
 
-app.get("/jobs", async (req, res) => {
-  try {
-    const jobs = await listJobs(100);
-    res.json(jobs);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch jobs" });
-  }
-});
+// app.get("/jobs", async (req, res) => {
+//   try {
+//     const jobs = await listJobs(100);
+//     res.json(jobs);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to fetch jobs" });
+//   }
+// });
 
-app.get("/userJobs/:userId", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    if (!userId) {
-      return res.status(400).json({ error: "Invalid user ID" });
-    }
+// app.get("/userJobs/:userId", async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+//     if (!userId) {
+//       return res.status(400).json({ error: "Invalid user ID" });
+//     }
 
-    const jobs = await listJobsByUser(userId, 50);
-    res.json(jobs);
-  } catch (err) {
-    console.error("Error fetching user jobs:", err);
-    res.status(500).json({ error: "Failed to fetch jobs" });
-  }
-});
+//     const jobs = await listJobsByUser(userId, 50);
+//     res.json(jobs);
+//   } catch (err) {
+//     console.error("Error fetching user jobs:", err);
+//     res.status(500).json({ error: "Failed to fetch jobs" });
+//   }
+// });
 
 // app.post("/upload", (req, res) => {
 //   if (isProcessing) {
@@ -206,63 +200,63 @@ app.get("/userJobs/:userId", async (req, res) => {
 //   });
 // });
 
-app.post("/create-user", async (req, res) => {
-  try {
-    const { name, username, password } = req.body;
-    if (!name || !username || !password) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
+// app.post("/create-user", async (req, res) => {
+//   try {
+//     const { name, username, password } = req.body;
+//     if (!name || !username || !password) {
+//       return res.status(400).json({ error: "Missing required fields" });
+//     }
 
-    const id = await createUser({ name, username, password });
-    res.json({ success: true, id });
-  } catch (err) {
-    console.error("❌ Error creating user:", err.message);
-    res.status(500).json({ error: "Failed to create user" });
-  }
-});
+//     const id = await createUser({ name, username, password });
+//     res.json({ success: true, id });
+//   } catch (err) {
+//     console.error("❌ Error creating user:", err.message);
+//     res.status(500).json({ error: "Failed to create user" });
+//   }
+// });
 
-app.post("/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: "Missing email or password" });
-    }
+// app.post("/login", async (req, res) => {
+//   try {
+//     const { username, password } = req.body;
+//     if (!username || !password) {
+//       return res.status(400).json({ error: "Missing email or password" });
+//     }
 
-    const user = await loginUser({ username, password });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
+//     const user = await loginUser({ username, password });
+//     if (!user) {
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
 
-    res.json({ success: true, user });
-  } catch (err) {
-    console.error("❌ Error logging in:", err.message);
-    res.status(500).json({ error: "Login failed" });
-  }
-});
+//     res.json({ success: true, user });
+//   } catch (err) {
+//     console.error("❌ Error logging in:", err.message);
+//     res.status(500).json({ error: "Login failed" });
+//   }
+// });
 
-app.get("/templates", async (req, res) => {
-  console.log(process.env);
-  try {
-    const url = `https://graph.facebook.com/v22.0/${process.env.PHONE_NUMBER_ID}/message_templates`;
+// app.get("/templates", async (req, res) => {
+//   console.log(process.env);
+//   try {
+//     const url = `https://graph.facebook.com/v22.0/${process.env.PHONE_NUMBER_ID}/message_templates`;
 
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-      },
-    });
+//     const response = await fetch(url, {
+//       headers: {
+//         Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+//       },
+//     });
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    console.log("Templates data", data, url);
-    // Optional: filter only approved templates
-    const approved = data.data?.filter((t) => t.status === "APPROVED") || [];
+//     console.log("Templates data", data, url);
+//     // Optional: filter only approved templates
+//     const approved = data.data?.filter((t) => t.status === "APPROVED") || [];
 
-    res.json({ templates: approved });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch templates" });
-  }
-});
+//     res.json({ templates: approved });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to fetch templates" });
+//   }
+// });
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
 module.exports = app;
