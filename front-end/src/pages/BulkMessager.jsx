@@ -6,7 +6,7 @@ import io from "socket.io-client";
 // import axios from "axios";
 
 const socket = io(
-  "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app"
+  "whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app"
 ); // ✅ adjust to backend
 
 function BulkMessager() {
@@ -139,7 +139,7 @@ function BulkMessager() {
     console.log(formData);
     try {
       const response = await fetch(
-        "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app/upload",
+        "whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app/upload",
         {
           method: "POST",
           body: formData,

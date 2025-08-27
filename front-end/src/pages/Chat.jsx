@@ -5,7 +5,7 @@ import { useApp } from "../context/AppContext";
 import io from "socket.io-client";
 
 const socket = io(
-  "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app"
+  "whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app"
 ); // ✅ adjust if backend runs elsewhere
 
 function Chat() {
@@ -67,7 +67,7 @@ function Chat() {
 
   useEffect(() => {
     fetch(
-      "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app/status"
+      "whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app/status"
     )
       .then((res) => res.json())
       .then((data) => {
@@ -87,7 +87,7 @@ function Chat() {
       try {
         console.log("Called FetchChats");
         const res = await fetch(
-          "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app/get-chats"
+          "whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app/get-chats"
         );
         if (!res.ok) throw new Error("Not connected");
         const data = await res.json();
@@ -110,7 +110,7 @@ function Chat() {
   const logout = async () => {
     try {
       await fetch(
-        "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app/logout",
+        "whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app/logout",
         {
           method: "POST",
         }

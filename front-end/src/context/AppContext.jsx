@@ -16,7 +16,7 @@ export const AppProvider = ({ children }) => {
   const fetchJobs = async () => {
     try {
       const response = await fetch(
-        `https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app/userJobs/${user.id}`
+        `whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app/userJobs/${user.id}`
       );
 
       const data = await response.json();
