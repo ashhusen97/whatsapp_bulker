@@ -1,14 +1,86 @@
 import express from "express";
-import formidable from "formidable";
-import fs from "fs";
-import path from "path";
-import dotenv from "dotenv";
-import { parseCsv, normalizeNumber } from "./utils.js";
-import qrcode from "qrcode";
-import pkg from "whatsapp-web.js";
-const { Client, LocalAuth } = pkg;
-import { Server } from "socket.io";
-import http from "http";
+// import formidable from "formidable";
+// import fs from "fs";
+// import path from "path";
+// import dotenv from "dotenv";
+// import { parseCsv, normalizeNumber } from "./utils.js";
+// import qrcode from "qrcode";
+// import pkg from "whatsapp-web.js";
+// const { Client, LocalAuth } = pkg;
+// import { Server } from "socket.io";
+// import http from "http";
+// import {
+//   createUser,
+//   insertJob,
+//   listJobs,
+//   listJobsByUser,
+//   loginUser,
+// } from "./db.js";
+// import pLimit from "p-limit";
+// import cors from "cors";
+
+// dotenv.config();
+// const app = express();
+// app.use(cors());
+// app.use(express.json());
+// const PORT = process.env.PORT || 3000;
+// const CONCURRENCY = parseInt(process.env.WORKER_CONCURRENCY || "4", 10);
+
+// // --- HTTP + Socket.io setup ---
+// const server = http.createServer(app);
+// const io = new Server(server, {
+//   cors: {
+//     origin: "*",
+//     methods: ["GET", "POST"],
+//   },
+// });
+
+// // --- WhatsApp client setup ---
+// let qrCodeData = null;
+// let isConnected = false;
+// let client;
+// let isProcessing = false;
+
+// // --- Socket.io events ---
+// io.on("connection", (socket) => {
+//   console.log("🟢 React connected to Socket.IO");
+
+//   // send last QR if available
+//   if (qrCodeData) {
+//     socket.emit("qr", qrCodeData);
+//   }
+
+//   socket.on("getStatus", () => {
+//     if (isConnected) {
+//       socket.emit("ready", "WhatsApp Connected");
+//     } else if (qrCodeData) {
+//       socket.emit("qr", qrCodeData);
+//     } else {
+//       socket.emit("disconnected");
+//     }
+//   });
+
+//   socket.on("disconnect", () => {
+//     console.log("🔴 React disconnected");
+//   });
+// });
+// // --- API Routes ---
+// app.get("/", (req, res) => {
+//   return res.send("App is Ruuningg");
+// });
+// app.get("/status", (req, res) => {
+//   res.json({
+//     isConnected,
+//     qrCodeData,
+//   });
+// });
+
+// // --- Start server with Socket.IO ---
+// server.listen(PORT, () =>
+//   console.log(`🚀 API + Socket.IO listening on port ${PORT}`)
+// );
+
+const fs = require("fs");
 import {
   createUser,
   insertJob,
@@ -16,117 +88,11 @@ import {
   listJobsByUser,
   loginUser,
 } from "./db.js";
-import pLimit from "p-limit";
-import cors from "cors";
-
-dotenv.config();
+const formidable = require("formidable");
+const express = require("express");
 const app = express();
-app.use(cors());
-app.use(express.json());
-const PORT = process.env.PORT || 3000;
-const CONCURRENCY = parseInt(process.env.WORKER_CONCURRENCY || "4", 10);
 
-// --- HTTP + Socket.io setup ---
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
-
-// --- WhatsApp client setup ---
-let qrCodeData = null;
-let isConnected = false;
-let client;
-let isProcessing = false;
-
-// --- Socket.io events ---
-io.on("connection", (socket) => {
-  console.log("🟢 React connected to Socket.IO");
-
-  // send last QR if available
-  if (qrCodeData) {
-    socket.emit("qr", qrCodeData);
-  }
-
-  socket.on("getStatus", () => {
-    if (isConnected) {
-      socket.emit("ready", "WhatsApp Connected");
-    } else if (qrCodeData) {
-      socket.emit("qr", qrCodeData);
-    } else {
-      socket.emit("disconnected");
-    }
-  });
-
-  socket.on("disconnect", () => {
-    console.log("🔴 React disconnected");
-  });
-});
-// --- API Routes ---
-app.get("/", (req, res) => {
-  return res.send("App is Ruuningg");
-});
-app.get("/status", (req, res) => {
-  res.json({
-    isConnected,
-    qrCodeData,
-  });
-});
-
-app.get("/get-qr", (req, res) => {
-  res.json({ qr: qrCodeData || null });
-});
-
-app.get("/get-chats", async (req, res) => {
-  try {
-    const chats = await client.getChats();
-    res.json(chats);
-  } catch (err) {
-    console.error("Error fetching chats:", err);
-    res.status(500).json({ error: "Failed to fetch chats" });
-  }
-});
-
-// Assuming you already have "client" instance
-
-app.post("/logout", async (req, res) => {
-  try {
-    if (client) {
-      await client.logout();
-      console.log("👋 Logged out from WhatsApp");
-      isConnected = false;
-      qrCodeData = null;
-      restartClient();
-      io.emit("disconnected");
-      return res.json({ success: true, message: "Logged out successfully" });
-    }
-    res.status(400).json({ success: false, message: "Client not initialized" });
-  } catch (error) {
-    console.error("Error logging out:", error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-app.post("/send-bulk", async (req, res) => {
-  const { numbers, message } = req.body;
-
-  if (!numbers || !message) {
-    return res.status(400).json({ error: "Numbers and message are required" });
-  }
-
-  try {
-    for (const number of numbers) {
-      const chatId = number.includes("@c.us") ? number : `${number}@c.us`;
-      await client.sendMessage(chatId, message);
-    }
-    res.json({ success: true, message: "Messages sent successfully!" });
-  } catch (err) {
-    console.error("err", err);
-    res.status(500).json({ error: "Failed to send messages" });
-  }
-});
+app.get("/", (req, res) => res.send("Express on Vercel"));
 
 app.get("/jobs", async (req, res) => {
   try {
@@ -153,112 +119,92 @@ app.get("/userJobs/:userId", async (req, res) => {
   }
 });
 
-// app.get("/queued", async (req, res) => {
-//   try {
-//     const limit = pLimit(CONCURRENCY);
-//     const jobs = await fetchQueued(100);
-
-//     const tasks = jobs.map((j) =>
-//       limit(async () => {
-//         const result = await sendText(j.phone, j.message);
-//         await new Promise((r) => setTimeout(r, 500));
-//       })
-//     );
-
-//     await Promise.all(tasks);
-//     res.json({ success: true, processed: jobs.length });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Failed to fetch jobs" });
+// app.post("/upload", (req, res) => {
+//   if (isProcessing) {
+//     return res.status(400).json({ message: "Already processing file" });
 //   }
+
+//   const form = formidable({ multiples: false });
+//   form.parse(req, async (err, fields, files) => {
+//     if (err) return res.status(400).send(err.message);
+
+//     const file = files.file;
+//     const template = fields.template;
+//     const campaignName = fields.campaignName;
+//     if (!file) return res.status(400).send("file required");
+
+//     // temp + dest paths
+//     const tmpPath = file.filepath || file.path;
+//     const dest = path.join(
+//       __dirname,
+//       "uploads",
+//       `${Date.now()}-${file.originalFilename}`
+//     );
+//     fs.mkdirSync(path.dirname(dest), { recursive: true });
+//     fs.copyFileSync(tmpPath, dest);
+
+//     // parse CSV
+//     const records = parseCsv(dest);
+
+//     const inserted = [];
+//     const totalMessages = records.length;
+//     let sentMessages = 0;
+//     let failedMessages = 0;
+
+//     isProcessing = true;
+
+//     for (const r of records) {
+//       const phone = normalizeNumber(r.phone || r.number || r.mobile);
+//       const message = r.message || r.text || "";
+//       const user_id = r.user_id || fields.user_id || null;
+
+//       if (!phone || !message) {
+//         failedMessages++;
+//         continue;
+//       }
+
+//       const response_ = await fetch(
+//         `https://graph.facebook.com/v20.0/${process.env.PHONE_NUMBER_ID}/messages`,
+//         {
+//           method: "POST",
+//           headers: {
+//             Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             messaging_product: "whatsapp",
+//             to: phone,
+//             type: "template",
+//             template: { name: template, language: { code: "en" } },
+//           }),
+//         }
+//       );
+//       console.log("Whatsapp api response", response_);
+//       const id = insertJob({ user_id, phone, message: template });
+
+//       io.emit("progress", {
+//         sent: sentMessages,
+//         total: totalMessages,
+//         status: "sent", // or "failed"
+//         message: `Message sent to ${phone}`,
+//       });
+//       inserted.push(id);
+//       sentMessages++;
+//     }
+
+//     isProcessing = false;
+
+//     res.json({
+//       ok: true,
+//       inserted,
+//       stats: {
+//         total: totalMessages,
+//         sent: sentMessages,
+//         failed: failedMessages,
+//       },
+//     });
+//   });
 // });
-
-app.post("/upload", (req, res) => {
-  if (isProcessing) {
-    return res.status(400).json({ message: "Already processing file" });
-  }
-
-  const form = formidable({ multiples: false });
-  form.parse(req, async (err, fields, files) => {
-    if (err) return res.status(400).send(err.message);
-
-    const file = files.file;
-    const template = fields.template;
-    const campaignName = fields.campaignName;
-    if (!file) return res.status(400).send("file required");
-
-    // temp + dest paths
-    const tmpPath = file.filepath || file.path;
-    const dest = path.join(
-      __dirname,
-      "uploads",
-      `${Date.now()}-${file.originalFilename}`
-    );
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.copyFileSync(tmpPath, dest);
-
-    // parse CSV
-    const records = parseCsv(dest);
-
-    const inserted = [];
-    const totalMessages = records.length;
-    let sentMessages = 0;
-    let failedMessages = 0;
-
-    isProcessing = true;
-
-    for (const r of records) {
-      const phone = normalizeNumber(r.phone || r.number || r.mobile);
-      const message = r.message || r.text || "";
-      const user_id = r.user_id || fields.user_id || null;
-
-      if (!phone || !message) {
-        failedMessages++;
-        continue;
-      }
-
-      const response_ = await fetch(
-        `https://graph.facebook.com/v20.0/${process.env.PHONE_NUMBER_ID}/messages`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            messaging_product: "whatsapp",
-            to: phone,
-            type: "template",
-            template: { name: template, language: { code: "en" } },
-          }),
-        }
-      );
-      console.log("Whatsapp api response", response_);
-      const id = insertJob({ user_id, phone, message: template });
-
-      io.emit("progress", {
-        sent: sentMessages,
-        total: totalMessages,
-        status: "sent", // or "failed"
-        message: `Message sent to ${phone}`,
-      });
-      inserted.push(id);
-      sentMessages++;
-    }
-
-    isProcessing = false;
-
-    res.json({
-      ok: true,
-      inserted,
-      stats: {
-        total: totalMessages,
-        sent: sentMessages,
-        failed: failedMessages,
-      },
-    });
-  });
-});
 
 app.post("/create-user", async (req, res) => {
   try {
@@ -317,8 +263,6 @@ app.get("/templates", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch templates" });
   }
 });
+app.listen(3000, () => console.log("Server ready on port 3000."));
 
-// --- Start server with Socket.IO ---
-server.listen(PORT, () =>
-  console.log(`🚀 API + Socket.IO listening on port ${PORT}`)
-);
+module.exports = app;
