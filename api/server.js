@@ -1,16 +1,19 @@
-import express from "express";
+const express = require("express");
+const serverless = require("serverless-http");
 
-import dotenv from "dotenv";
-
-dotenv.config();
 const app = express();
-app.use(express.json());
-const PORT = process.env.PORT || 3000;
 
+// Middleware
+app.use(express.json());
+
+// Routes
 app.get("/", (req, res) => {
-  return res.send("App is Ruuningg");
+  res.send("✅ Hello from Express on Vercel!");
 });
 
-app.listen(PORT, () =>
-  console.log(`🚀 API + Socket.IO listening on port ${3000}`)
-);
+app.get("/ping", (req, res) => {
+  res.json({ message: "pong" });
+});
+
+// Export the serverless handler
+module.exports.handler = serverless(app);
