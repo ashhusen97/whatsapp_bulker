@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
+import { BASE_URL } from "../constants/urls";
 import { useApp } from "../context/AppContext";
-import io from "socket.io-client";
-// import axios from "axios";
-
-const socket = io(
-  "whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app"
-); // ✅ adjust to backend
+import { useAuth } from "../context/AuthContext";
 
 function BulkMessager() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [templates, setTemplates] = useState([
@@ -109,12 +106,6 @@ function BulkMessager() {
   const [progress, setProgress] = useState(0);
   const [stats, setStats] = useState({ total: 0, sent: 0, failed: 0 });
 
-  useEffect(() => {
-    socket.on("progress", (data) => {
-      console.log("Statssss", data);
-    });
-  }, []);
-
   const handleTemplateChange = (e) => {
     setSelectedTemplate(e.target.value);
   };
@@ -128,23 +119,22 @@ function BulkMessager() {
   };
 
   const handleFileUpload = async (e) => {
+    console.log("USAASAS", user);
     const formData = new FormData();
     formData.append("file", selectedFile);
     formData.append(
       "template",
       templates.filter((x) => x.id == selectedTemplate)[0]?.name
     );
+    formData.append("user_id", user);
     formData.append("campaign", campaignName);
 
     console.log(formData);
     try {
-      const response = await fetch(
-        "whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const response = await fetch(`${BASE_URL}/upload`, {
+        method: "POST",
+        body: formData,
+      });
 
       console.log(response);
       if (!response.ok) {

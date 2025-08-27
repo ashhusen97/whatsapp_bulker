@@ -55,11 +55,9 @@ function Jobs() {
                       Job ID
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Title
+                      Template
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
+
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Phone Number
                     </th>
@@ -76,21 +74,11 @@ function Jobs() {
                           {job.id}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {job.message}
+                          {job.template}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              job.status === "active"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {job.status}
-                          </span>
-                        </td>
+
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {job.phone}
+                          {job.customer_phone}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-right space-x-2">
                           <button className="text-blue-600 hover:underline">

@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { BASE_URL } from "../constants/urls";
+import { da } from "date-fns/locale";
 
 const AuthContext = createContext(undefined);
 
@@ -11,8 +13,7 @@ export const AuthProvider = ({ children }) => {
 
     if (storedUser) {
       try {
-        let parsed = JSON.parse(storedUser);
-        setUser(parsed);
+        setUser(storedUser);
       } catch {
         setUser(null);
       }
@@ -25,27 +26,24 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await fetch(
-        "whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: username, password }),
+      });
 
       const data = await response.json();
+      console.log(data?.user_id);
+      if (data?.user_id) {
+        setUser(data?.user_id);
 
-      if (response.ok) {
-        setUser(data?.user);
-        let stringData = data?.user;
         localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("user", JSON.stringify({ stringData }));
+        localStorage.setItem("user", "" + data?.user_id);
         setIsAuthenticated(true);
       } else {
-        alert(data.message || "Login failed");
+        alert(data.error || "Login failed");
       }
     } catch (error) {
       console.error("Login error:", error);

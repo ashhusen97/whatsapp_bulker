@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
+import { BASE_URL } from "../constants/urls";
 
 const AppContext = createContext(undefined);
 
@@ -15,13 +16,11 @@ export const AppProvider = ({ children }) => {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch(
-        `whatsapp-bulker-server-1ex8nfvuw-ashhusen97s-projects.vercel.app/userJobs/${user.id}`
-      );
-
+      console.log(user);
+      const response = await fetch(`${BASE_URL}/userJobs/${user}`);
       const data = await response.json();
-
-      setJobs(data);
+      console.log("data", data);
+      setJobs(data?.jobs);
     } catch (error) {
       console.error("Login error:", error);
       alert("Something went wrong, please try again");
