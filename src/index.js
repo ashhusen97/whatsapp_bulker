@@ -215,24 +215,24 @@ app.get("/jobs", async (req, res) => {
 //   }
 // });
 
-// app.post("/login", async (req, res) => {
-//   try {
-//     const { username, password } = req.body;
-//     if (!username || !password) {
-//       return res.status(400).json({ error: "Missing email or password" });
-//     }
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: "Missing email or password" });
+    }
 
-//     const user = await loginUser({ username, password });
-//     if (!user) {
-//       return res.status(401).json({ error: "Invalid credentials" });
-//     }
+    const user = await loginUser({ username, password });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
 
-//     res.json({ success: true, user });
-//   } catch (err) {
-//     console.error("❌ Error logging in:", err.message);
-//     res.status(500).json({ error: "Login failed" });
-//   }
-// });
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error("❌ Error logging in:", err.message);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
 
 // app.get("/templates", async (req, res) => {
 //   console.log(process.env);
