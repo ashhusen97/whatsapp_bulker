@@ -29,44 +29,12 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const CONCURRENCY = parseInt(process.env.WORKER_CONCURRENCY || "4", 10);
 
-// --- HTTP + Socket.io setup ---
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
-
 // --- WhatsApp client setup ---
 let qrCodeData = null;
 let isConnected = false;
 let client;
 let isProcessing = false;
 
-// --- Socket.io events ---
-io.on("connection", (socket) => {
-  console.log("🟢 React connected to Socket.IO");
-
-  // send last QR if available
-  if (qrCodeData) {
-    socket.emit("qr", qrCodeData);
-  }
-
-  socket.on("getStatus", () => {
-    if (isConnected) {
-      socket.emit("ready", "WhatsApp Connected");
-    } else if (qrCodeData) {
-      socket.emit("qr", qrCodeData);
-    } else {
-      socket.emit("disconnected");
-    }
-  });
-
-  socket.on("disconnect", () => {
-    console.log("🔴 React disconnected");
-  });
-});
 // --- API Routes ---
 app.get("/", (req, res) => {
   return res.send("App is Ruuningg");
@@ -76,59 +44,6 @@ app.get("/status", (req, res) => {
     isConnected,
     qrCodeData,
   });
-});
-
-app.get("/get-qr", (req, res) => {
-  res.json({ qr: qrCodeData || null });
-});
-
-app.get("/get-chats", async (req, res) => {
-  try {
-    const chats = await client.getChats();
-    res.json(chats);
-  } catch (err) {
-    console.error("Error fetching chats:", err);
-    res.status(500).json({ error: "Failed to fetch chats" });
-  }
-});
-
-// Assuming you already have "client" instance
-
-app.post("/logout", async (req, res) => {
-  try {
-    if (client) {
-      await client.logout();
-      console.log("👋 Logged out from WhatsApp");
-      isConnected = false;
-      qrCodeData = null;
-      restartClient();
-      io.emit("disconnected");
-      return res.json({ success: true, message: "Logged out successfully" });
-    }
-    res.status(400).json({ success: false, message: "Client not initialized" });
-  } catch (error) {
-    console.error("Error logging out:", error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-app.post("/send-bulk", async (req, res) => {
-  const { numbers, message } = req.body;
-
-  if (!numbers || !message) {
-    return res.status(400).json({ error: "Numbers and message are required" });
-  }
-
-  try {
-    for (const number of numbers) {
-      const chatId = number.includes("@c.us") ? number : `${number}@c.us`;
-      await client.sendMessage(chatId, message);
-    }
-    res.json({ success: true, message: "Messages sent successfully!" });
-  } catch (err) {
-    console.error("err", err);
-    res.status(500).json({ error: "Failed to send messages" });
-  }
 });
 
 app.get("/jobs", async (req, res) => {
@@ -322,6 +237,6 @@ app.get("/templates", async (req, res) => {
 });
 
 // --- Start server with Socket.IO ---
-server.listen(PORT, () =>
+app.listen(PORT, () =>
   console.log(`🚀 API + Socket.IO listening on port ${PORT}`)
 );
