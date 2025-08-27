@@ -1,5 +1,5 @@
 import fs from "fs";
-import { parse } from "csv-parse/sync";
+import { parse } from "csv-parse";
 
 export function normalizeNumber(raw) {
   if (!raw) return null;
