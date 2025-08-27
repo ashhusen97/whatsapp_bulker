@@ -4,7 +4,9 @@ import Header from "../partials/Header";
 import { useApp } from "../context/AppContext";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:3000"); // ✅ adjust if backend runs elsewhere
+const socket = io(
+  "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app"
+); // ✅ adjust if backend runs elsewhere
 
 function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -64,7 +66,9 @@ function Chat() {
   // ✅ Fetch chats when connected
 
   useEffect(() => {
-    fetch("http://localhost:3000/status")
+    fetch(
+      "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app/status"
+    )
       .then((res) => res.json())
       .then((data) => {
         console.log("Stqtus data", data);
@@ -82,7 +86,9 @@ function Chat() {
     const fetchChats = async () => {
       try {
         console.log("Called FetchChats");
-        const res = await fetch("http://localhost:3000/get-chats");
+        const res = await fetch(
+          "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app/get-chats"
+        );
         if (!res.ok) throw new Error("Not connected");
         const data = await res.json();
         setMessages(data);
@@ -103,9 +109,12 @@ function Chat() {
   }, [connected]);
   const logout = async () => {
     try {
-      await fetch("http://localhost:3000/logout", {
-        method: "POST",
-      });
+      await fetch(
+        "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app/logout",
+        {
+          method: "POST",
+        }
+      );
       setConnected(false);
       setQrCode(null);
     } catch (err) {

@@ -5,7 +5,9 @@ import { useApp } from "../context/AppContext";
 import io from "socket.io-client";
 // import axios from "axios";
 
-const socket = io("http://localhost:3000"); // ✅ adjust to backend
+const socket = io(
+  "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app"
+); // ✅ adjust to backend
 
 function BulkMessager() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -136,10 +138,13 @@ function BulkMessager() {
 
     console.log(formData);
     try {
-      const response = await fetch("http://localhost:3000/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "https://whatsapp-bulker-client-b4ipswq6d-ashhusen97s-projects.vercel.app/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       console.log(response);
       if (!response.ok) {
