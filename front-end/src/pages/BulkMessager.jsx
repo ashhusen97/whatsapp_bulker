@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
 import { BASE_URL } from "../constants/urls";
@@ -105,7 +105,7 @@ function BulkMessager() {
 
   const [progress, setProgress] = useState(0);
   const [stats, setStats] = useState({ total: 0, sent: 0, failed: 0 });
-
+  const fileRef = useRef();
   const handleTemplateChange = (e) => {
     setSelectedTemplate(e.target.value);
   };
@@ -141,8 +141,10 @@ function BulkMessager() {
         throw new Error(`Server responded with status ${response.status}`);
       }
 
-      alert("✅ Excel uploaded successfully. Messages are being processed.");
+      const data = await response.json();
+      alert(JSON.stringify(data.stats));
       setSelectedFile(null);
+      fileRef.current.value = "";
     } catch (err) {
       console.error("Upload failed:", err);
       alert("❌ Failed to upload file.");
@@ -214,6 +216,7 @@ function BulkMessager() {
                     Upload Excel for Bulk Messages
                   </label>
                   <input
+                    ref={fileRef}
                     type="file"
                     accept=".xlsx, .xls, .csv"
                     onChange={handleFileChange}
