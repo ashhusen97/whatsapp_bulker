@@ -157,6 +157,39 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
                   </div>
                 </NavLink>
               </li>
+              {/* users only for admin */}
+              <li
+                className={`pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r ${
+                  pathname.includes("users") &&
+                  "from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04]"
+                }`}
+              >
+                <NavLink
+                  end
+                  to="/users"
+                  className={`block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${
+                    pathname.includes("users")
+                      ? ""
+                      : "hover:text-gray-900 dark:hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="shrink-0 fill-current text-gray-400 dark:text-gray-500"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
+                    </svg>
+
+                    <span className="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                      Users
+                    </span>
+                  </div>
+                </NavLink>
+              </li>
               {/* Jobs */}
               <li
                 className={`pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-linear-to-r ${
@@ -175,18 +208,15 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
                 >
                   <div className="flex items-center">
                     <svg
-                      className={`shrink-0 fill-current ${
-                        pathname.includes("job")
-                          ? "text-violet-500"
-                          : "text-gray-400 dark:text-gray-500"
-                      }`}
                       xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
+                      className="shrink-0 fill-current text-gray-400 dark:text-gray-500"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
                     >
-                      <path d="M6.753 2.659a1 1 0 0 0-1.506-1.317L2.451 4.537l-.744-.744A1 1 0 1 0 .293 5.207l1.5 1.5a1 1 0 0 0 1.46-.048l3.5-4ZM6.753 10.659a1 1 0 1 0-1.506-1.317l-2.796 3.195-.744-.744a1 1 0 0 0-1.414 1.414l1.5 1.5a1 1 0 0 0 1.46-.049l3.5-4ZM8 4.5a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1ZM9 11.5a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H9Z" />
+                      <path d="M20 2H4a2 2 0 0 0-2 2v14l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z" />
                     </svg>
+
                     <span className="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                       Jobs
                     </span>

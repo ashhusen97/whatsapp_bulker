@@ -16,6 +16,7 @@
     "date-fns": "^4.1.0",
     "moment": "^2.29.4",
     "react": "^19.0.0",
+    "react-data-table-component": "^7.7.0",
     "react-day-picker": "^9.4.1",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.2",

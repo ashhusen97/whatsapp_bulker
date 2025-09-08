@@ -13,10 +13,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Jobs from "./pages/Jobs";
 import Chat from "./pages/Chat";
 import BulkMessager from "./pages/BulkMessager";
+import { useAuth } from "./context/AuthContext";
+import Users from "./pages/Users";
 
 function App() {
   const location = useLocation();
-
+  const { user } = useAuth();
+  console.log("Role", user?.role);
   useEffect(() => {
     document.querySelector("html").style.scrollBehavior = "auto";
     window.scroll({ top: 0 });
@@ -37,23 +40,34 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin", "agent"]}>
               <Dashboard />
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Users />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/jobs"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin", "agent"]}>
               <Jobs />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/chats"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin", "agent"]}>
               <Chat />
             </ProtectedRoute>
           }
@@ -61,7 +75,7 @@ function App() {
         <Route
           path="/bulk"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin", "agent"]}>
               <BulkMessager />
             </ProtectedRoute>
           }

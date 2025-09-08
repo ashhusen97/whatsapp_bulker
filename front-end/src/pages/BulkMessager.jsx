@@ -126,8 +126,8 @@ function BulkMessager() {
       "template",
       templates.filter((x) => x.id == selectedTemplate)[0]?.name
     );
-    formData.append("user_id", user);
-    formData.append("campaign", campaignName);
+    formData.append("user_id", user.user_id);
+    formData.append("campaing_name", campaignName);
 
     console.log(formData);
     try {

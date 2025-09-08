@@ -17,10 +17,12 @@ export const AppProvider = ({ children }) => {
   const fetchJobs = async () => {
     try {
       console.log(user);
-      const response = await fetch(`${BASE_URL}/userJobs/${user}`);
+      const response = await fetch(
+        `${BASE_URL}/conversations/${user?.user_id}`
+      );
       const data = await response.json();
       console.log("data", data);
-      setJobs(data?.jobs);
+      setJobs(data);
     } catch (error) {
       console.error("Login error:", error);
       alert("Something went wrong, please try again");
