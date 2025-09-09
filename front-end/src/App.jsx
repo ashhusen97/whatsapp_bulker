@@ -15,6 +15,7 @@ import Chat from "./pages/Chat";
 import BulkMessager from "./pages/BulkMessager";
 import { useAuth } from "./context/AuthContext";
 import Users from "./pages/Users";
+import Settings from "./pages/Settings";
 
 function App() {
   const location = useLocation();
@@ -77,6 +78,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["admin", "agent"]}>
               <BulkMessager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Settings />
             </ProtectedRoute>
           }
         />
