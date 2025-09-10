@@ -9,9 +9,25 @@ export const AppProvider = ({ children }) => {
   const { user } = useAuth();
 
   useEffect(() => {
+    let cancelled = false;
+
     if (user) {
-      fetchJobs();
+      const fetchAndSetJobs = async () => {
+        if (cancelled) return;
+        await fetchJobs();
+      };
+
+      fetchAndSetJobs();
+
+      const t = setInterval(fetchAndSetJobs, 5000);
+
+      return () => {
+        cancelled = true;
+        clearInterval(t);
+      };
     }
+
+    return () => {}; // no-op cleanup when user is null
   }, [user]);
 
   const fetchJobs = async () => {

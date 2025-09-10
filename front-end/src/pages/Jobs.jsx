@@ -44,11 +44,11 @@ export default function Jobs() {
           const data = await res.json();
           if (!cancelled) setMessages(Array.isArray(data) ? data : []);
           // scroll to bottom
-          requestAnimationFrame(() => {
-            listRef.current?.lastElementChild?.scrollIntoView({
-              behavior: "auto",
-            });
-          });
+          // requestAnimationFrame(() => {
+          //   listRef.current?.lastElementChild?.scrollIntoView({
+          //     behavior: "auto",
+          //   });
+          // });
         }
       } catch (e) {
         console.error(e);
@@ -122,8 +122,11 @@ export default function Jobs() {
         {/* Site header */}
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <div className="h-screen bg-neutral-100 text-neutral-900">
-          <div className="flex h-full p-2 md:p-10 gap-2 md:gap-5">
+        <div
+          className=" bg-neutral-100 text-neutral-900"
+          style={{ height: "calc(100vh - 64px)" }}
+        >
+          <div className="flex h-full  md:p-10 gap-2 md:gap-5">
             {/* LEFT: Contacts */}
             <aside
               className={`border-r border-neutral-200 bg-white flex-col rounded-lg shadow-sm
@@ -291,6 +294,7 @@ export default function Jobs() {
 
 function MessageBubble({ message }) {
   const isMine = message.sender_type === "agent";
+  console.log(`https://steerstech.com/whatsapp-php/uploads/${message.content}`);
   return (
     <div
       className={`flex ${isMine ? "justify-end" : "justify-start"} mb-2 px-2`}
@@ -302,7 +306,16 @@ function MessageBubble({ message }) {
             : "bg-white border-neutral-200 rounded-bl-sm"
         }`}
       >
-        <div>{message.content}</div>
+        {message?.message_type?.trim().toLowerCase() === "image" ? (
+          <img
+            src={`https://steerstech.com/whatsapp-php/uploads/${message.content}`}
+            alt="Uploaded"
+            style={{ maxWidth: "200px", borderRadius: "8px" }}
+          />
+        ) : (
+          <div>{message.content}</div>
+        )}
+
         <div className="text-[10px] mt-1 opacity-70 text-right">
           {formatTime(message.sent_at)}
         </div>

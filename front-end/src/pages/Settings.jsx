@@ -19,7 +19,7 @@ function Settings() {
     const res = await fetch(`${BASE_URL}/update-token`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `token=${encodeURIComponent(token)}}`,
+      body: `token=${encodeURIComponent(token)}`,
     });
 
     const data = await res.json();
